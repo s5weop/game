@@ -12,13 +12,13 @@ from kivy.uix.button import Button
 # Константы
 TILE_SIZE = 20
 WIDTH, HEIGHT = TILE_SIZE*47, TILE_SIZE*24
-Window.size = (WIDTH+TILE_SIZE, HEIGHT+TILE_SIZE)
+Window.size = (WIDTH+TILE_SIZE, HEIGHT+(TILE_SIZE*3))
 
 # Цвета
 WHITE = (1, 1, 1, 1)  # Kivy использует значения от 0 до 1 для цвета
 BLACK = (0, 0, 0, 1)
 RED = (1, 0, 0, 0.5)  # Цвет бонуса
-
+PLAYING = True
 
 class GameScreen(BoxLayout):
     def __init__(self, is_winner, **kwargs):
@@ -43,7 +43,11 @@ class GameScreen(BoxLayout):
         self.add_widget(self.quit_button)
 
     def quit_game(self, instance):
-        App.get_running_app().stop()
+        raise Exception("Presseed Q")
+        return True
+        #App.get_running_app().stop()
+
+
 
 
 # Класс для Пак-Мэна
@@ -76,8 +80,9 @@ class Ghost(Widget):
         self.size = (20, 20)  # Размер кружка
         self.pos = (40, 440)  # Начальная позиция кружка
         with self.canvas:
-            Color(1, 0, 1)  # Желтый цвет (RGB)
+            Color(1, 0, 1)  # фиолетовый цвет (RGB)
             self.ellipse = Ellipse(pos=self.pos, size=self.size)
+
 
     def check_ghost(self, pacman):
         xcoll = False
@@ -89,6 +94,7 @@ class Ghost(Widget):
             ycoll = True
         if xcoll == True and ycoll == True:
             return True
+
 
 def load_level(filename):
     with open(filename, 'r', encoding='utf-8') as file:
@@ -111,10 +117,11 @@ class LevelWidget(Widget):
             Rectangle(pos=(0, 0), size=(WIDTH, HEIGHT))
 
 
+
 class Wall(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.level = load_level('code_lvl_2_file.txt')
+        self.level = load_level('code_lvl_0_file.txt')
         self.coordinates = []
 
         with self.canvas:
@@ -151,7 +158,7 @@ class Wall(Widget):
 class Bonus(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.level = load_level('code_lvl_2_file.txt')
+        self.level = load_level('code_lvl_0_file.txt')
         self.coordinates = []
         self.count = 0
 
@@ -185,6 +192,7 @@ class Bonus(Widget):
             for coord in self.coordinates:
                 Color(*RED)  # Устанавливаем цвет
                 self.ellipse = Ellipse(pos=(coord[0], coord[1]), size=(int(TILE_SIZE / 2), int(TILE_SIZE / 2)))
+
 
 
 # Класс для игры
@@ -260,4 +268,11 @@ class PacmanApp(App):
 
 
 if __name__ == '__main__':
-    PacmanApp().run()
+
+    while PLAYING:
+        try:
+            PacmanApp().run()
+            print ('1')
+        except Exception as e:
+            PLAYING = False
+    PacmanApp().stop()
